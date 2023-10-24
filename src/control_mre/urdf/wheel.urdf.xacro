@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="wheel" params="name parent *origin *axis">
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="10.0"/>
+        <inertia  ixx="0.52389008125" ixy="0.00"  ixz="0.00" iyy="0.52389008125" iyz="0.00" izz="0.8518128125" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh
+            filename="file://$(find control_mre)/meshes/wheel.stl" scale="0.001 0.001 0.001" />
+        </geometry>
+        <material name="">
+          <color rgba=".2 0.2 0.2 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 -0.195" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.41275" length="0.3429"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${name}_joint" type="continuous">
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      <xacro:insert_block name="axis"/>
+      <xacro:insert_block name="origin"/>
+      <dynamics damping="0.001" friction="0.01"/>
+    </joint>
+
+    <gazebo reference="${name}_link">
+
+		<material>Gazebo/DarkGrey</material>
+
+     <collision>
+      <surface>
+       <friction>
+        <ode>
+         <mu>100</mu>
+         <mu2>100</mu2>
+        </ode>
+       </friction>
+      </surface>
+     </collision>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

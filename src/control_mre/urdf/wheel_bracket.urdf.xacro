@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="wheel_bracket" params="name parent *origin *axis">
+
+    <link name="${name}_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="0.01" />
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="file://$(find control_mre)/meshes/wheel_bracket.stl" scale="0.001 0.001 0.001" />
+        </geometry>
+        <material name="">
+          <color rgba="0.10 0.50 0.14 1" />
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${name}_joint" type="revolute">
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      <xacro:insert_block name="axis" />
+      <xacro:insert_block name="origin" />
+      <dynamics damping="10.0" friction="1.0"/>
+      <limit lower="-0.698132" upper="0.698132" effort="1000" velocity="10.0" />
+    </joint>
+
+    <transmission name="trans_${name}">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="motor_${name}">
+        <mechanicalReduction>10000</mechanicalReduction>
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+      </actuator>
+      <joint name="${name}">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+
+    <gazebo reference="${name}_link">
+      <visual>  
+        <material>  
+          <ambient>0.10 0.25 0.14 1.0</ambient>  
+          <diffuse>0.10 0.25 0.14 1.0</diffuse>  
+          <specular>0.10 0.25 0.14 1.0</specular>  
+          <emissive>0.10 0.25 0.14 1.0</emissive>  
+        </material>  
+      </visual>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="example_robot">
+  <xacro:include filename="$(find control_mre)/urdf/base_link.urdf.xacro"/>
+
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <!-- Front wheels -->
+    <joint name="front_driver_wheel_joint">
+      <command_interface name="position">
+        <!-- <param name=""></param> -->
+      </command_interface>
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="front_passenger_wheel_joint">
+      <command_interface name="position">
+        <!-- <param name=""></param> -->
+      </command_interface>
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+
+    <!-- Rear wheels -->
+    <joint name="rear_driver_wheel_joint">
+      <command_interface name="velocity">
+        <!-- <param name=""></param> -->
+      </command_interface>
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="rear_passenger_wheel_joint">
+      <command_interface name="velocity">
+        <!-- <param name=""></param> -->
+      </command_interface>
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+
+    <!-- Wheel Brackets -->
+    <joint name="wheel_bracket_driver_joint">
+      <command_interface name="position">
+        <param name="initial_value">0.0</param>
+      </command_interface>
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="wheel_bracket_passenger_joint">
+      <command_interface name="position">
+        <param name="initial_value">0.0</param>
+      </command_interface>
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <parameters>$(find control_mre)/config/controllers_sim.yaml</parameters>
+    </plugin>
+
+    <!-- This is mainly included to publish odom frame....migration from previous package -->
+    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <update_rate>30</update_rate>
+
+      <!-- Wheel Information -->
+      <left_joint>front_driver_wheel_joint</left_joint>
+      <right_joint>front_passenger_wheel_joint</right_joint>
+      <wheel_separation>0.6038</wheel_separation>
+      <wheel_diameter>0.200</wheel_diameter>
+
+      <!-- Limits -->
+      <max_wheel_torque>2.5</max_wheel_torque>
+      <max_wheel_acceleration>10.0</max_wheel_acceleration>
+
+      <command_topic>cmd_vel</command_topic>
+      <!-- Output -->
+      <odometry_topic>odom</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+      <!-- This is set to false so ROS Control can manage the wheels -->
+      <publish_wheel_tf>false</publish_wheel_tf>
+    </plugin>
+
+  </gazebo>
+</robot>

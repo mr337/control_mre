@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="latitude" default="49.9"/>
+  <xacro:arg name="longitude" default="8.9"/>
+  <xacro:arg name="heading" default="0.0"/>
+  <xacro:arg name="altitude" default="0.0"/>
+
+  <xacro:include filename="$(find control_mre)/urdf/wheel.urdf.xacro"/>
+  <xacro:include filename="$(find control_mre)/urdf/wheel_trans.urdf.xacro"/>
+  <xacro:include filename="$(find control_mre)/urdf/wheel_bracket.urdf.xacro"/>
+  <xacro:include filename="$(find control_mre)/urdf/front_mount_yaw.urdf.xacro"/>
+  <xacro:include filename="$(find control_mre)/urdf/front_mount_roll.urdf.xacro"/>
+
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="100.0" />
+      <inertia ixx="16.6666666667" ixy="0" ixz="0" iyy="10.4166666667" iyz="0" izz="10.4166666667" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 0" />
+      <geometry>
+        <mesh filename="file://$(find control_mre)/meshes/chassis.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="">
+        <color rgba="0.10 0.50 0.14 1" />
+      </material>
+    </visual>
+  </link>
+
+  <xacro:wheel_bracket name="wheel_bracket_driver" parent="front_mount_roll_link">
+    <axis xyz="0 0 1"/>
+		<origin rpy="0 0 -1.5708" xyz="-0.62865 0 -0.038881"/>
+	</xacro:wheel_bracket>
+
+  <xacro:wheel_bracket name="wheel_bracket_passenger" parent="front_mount_roll_link">
+    <axis xyz="0 0 1"/>
+		<origin rpy="0 0 1.5708" xyz="0.62865 0 -0.038881"/>
+	</xacro:wheel_bracket>
+
+
+  <xacro:wheel name="front_driver_wheel" parent="wheel_bracket_driver_link">
+    <axis xyz="0 0 -1"/>
+    <origin rpy="-1.5708 0 0" xyz="0 -0.180975 0.053975"/>
+  </xacro:wheel>
+
+  <xacro:wheel name="front_passenger_wheel" parent="wheel_bracket_passenger_link">
+    <axis xyz="0 0 1"/>
+    <origin rpy="-1.5708 0 0" xyz="0 -0.180975 0.053975"/>
+  </xacro:wheel>
+
+
+  <xacro:wheel name="rear_driver_wheel" parent="base_link">
+    <axis xyz="0 0 -1"/>
+		<origin rpy="0 1.5708 0" xyz="-0.549148 -2.9718 0"/>
+	</xacro:wheel>
+
+  <xacro:wheel name="rear_passenger_wheel" parent="base_link">
+    <axis xyz="0 0 1"/>
+		<origin rpy="0 -1.5708 0" xyz="0.549148 -2.9718 0"/>
+	</xacro:wheel>
+
+  <!-- <xacro:wheel_trans name="w0" /> -->
+  <!-- <xacro:wheel_trans name="w1" /> -->
+  <!-- <xacro:wheel_trans name="w2" /> -->
+  <!-- <xacro:wheel_trans name="w3" /> -->
+
+	<gazebo reference="base_link">
+    <visual>  
+      <material>  
+        <ambient>0.10 0.25 0.14 1.0</ambient>  
+        <diffuse>0.10 0.25 0.14 1.0</diffuse>  
+        <specular>0.10 0.25 0.14 1.0</specular>  
+        <emissive>0.10 0.25 0.14 1.0</emissive>  
+      </material>  
+    </visual>
+	</gazebo>
+
+  <gazebo reference="base_link">
+    <sensor name="gps_sensor" type="gps">
+      <always_on>true</always_on>
+      <update_rate>10.0</update_rate>
+      <plugin name="gps_controller" filename="libgazebo_ros_gps_sensor.so">
+        <ros>
+          <!-- <namespace>/br</namespace> -->
+          <remapping>gps_controller/out:=/fix_sim</remapping>
+          <remapping>gps_controller/vel:=/vel_sim</remapping>
+        </ros>
+        <frame_name>base_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>
